@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div>TEST</div>
+<strong>cycle autoescape</strong><br/>
+{% for quiz in quizs %}
+    {% if forloop.counter < 3 %}
+        {% cycle '#a2dee2' '#e2806b' as color %}
+        {% autoescape on %}
+            <div style="background-color:{{ color }}">{{ quiz.item_list }}</div><br/>
+        {% endautoescape %}
+    {% else %}
+        {% autoescape off %}
+            <div style="background-color:{% cycle '#a2dee2' '#e2806b' %}">{{ quiz.item_list }}</div><br/>
+        {% endautoescape %}
+    {% endif %}
+{% endfor %}
+
+<strong>filter</strong><br/>
+{% filter lower %}
+    {{ quiz.item_list }}<br/>
+{% endfilter %}
+{% filter force_escape %}
+    {{ quiz.item_list }}<br/>
+{% endfilter %}<br/>
+
+<strong>firstof</strong><br/>
+<br/>{% firstof var1 var2 var3 "<div>fallback value</div>" %}<br/>
+
+<strong>comment</strong><br/>
+{% comment %}
+    {{ quiz.item_list }}
+{% endcomment %}
+
+<strong>empty</strong><br/>
+<ul>
+    {% for athlete in athlete_list %}
+        <li>{{ athlete.name }}</li>
+    {% empty %}
+        <li>Sorry, no athletes in this list.</li>
+    {% endfor %}
+</ul>
+
+<strong>ifchanged</strong><br/>
+{% for quiz in quizs %}
+    <div>{% ifchanged %}{{ quiz.result }}{% endifchanged %}{{ quiz.result }}</div><br/>
+{% endfor %}
+
+<strong>include</strong><br/>
+{% include "name_snippet.html" with person="Jane" greeting="Hello" %}
+<br/>
+{% include "name_snippet.html" with greeting="Hi" only %}
+<br/>
+
+<strong>now</strong><br/>
+
+<div>It is {% now "jS F Y H:i" %}</div>
+<br/>
+
+<div>It is the {% now "jS \o\f F" %}</div>
+<br/>
+
+<div>It is {% now "SHORT_DATETIME_FORMAT" %}</div>
+<br/>
+
+<div>It is {% now "DATE_FORMAT" %}</div>
+<br/>
+
+<div>It is {% now "DATETIME_FORMAT" %}</div>
+<br/>
+
+<div>It is {% now "SHORT_DATE_FORMAT" %}</div>
+<br/>
+
+<strong>regroup</strong><br/>
+{% regroup quizs by result as result_list %}
+<ul>
+    {% for result in result_list %}
+        <li>
+            {{ result.grouper }}
+            <ul>
+                {% for item in result.list %}
+                    <li>{{ item.item_list | safe }}{{ item.result }}</li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+
+<strong>regroup|dictsort</strong><br/>
+{% regroup quizs|dictsort:"result" by result as result_list %}
+<ul>
+    {% for result in result_list %}
+        <li>
+            {{ result.grouper }}
+            <ul>
+                {% for item in result.list %}
+                    <li>{{ item.item_list | safe }}{{ item.result }}</li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+
+<strong>spaceless</strong><br/>
+{% autoescape off %}
+    {% spaceless %}
+        {{ quiz.item_list }}
+    {% endspaceless %}
+    <br/>
+    {{ quiz.item_list }}
+{% endautoescape %}
+<br/>
+{% spaceless %}
+    {{ quiz.item_list }}
+{% endspaceless %}
+<br/>
+{{ quiz.item_list }}
+<br/>
+
+<strong>ssi</strong><br/>
+{% ssi "/ssi_test.html" %}
+{% ssi "E:/git/tags_filters/templates/ssi_test.html" %}
+<br/>
+
+<strong>url</strong><br/>
+<a href="{% url "v4:name_age" name=quiz.result age=quiz.index %}">name_age</a>
+<a href="{% url "v4:name_age" quiz.result quiz.index %}">name_age</a>
+{% url "v4:name_age" quiz.result quiz.index as the_url %}
+<a href="{{ the_url }}">name_age</a>
+<br/>
+
+<strong>verbatim</strong><br/>
+{% verbatim %}
+    {{if dying}}Still alive.{{/if}}
+{% endverbatim %}
+<br/>
+{% verbatim myblock %}
+    Avoid template rendering via the {% verbatim %}{% endverbatim %} block.
+{% endverbatim myblock %}
+<br/>
+
+<strong>widthratio</strong><br/>
+{% widthratio 80 200 100 %}
+<br/>
+
+<strong>with</strong><br/>
+用更简单的变量名缓存复杂的变量名
+{% with total=business.employees.count %}
+    {{ total }} employee{{ total|pluralize }}
+{% endwith %}
+
+
+
+</body>
+</html>
